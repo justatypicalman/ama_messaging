@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/x-icon" href="/images/favicon.ico" />
+    <title>Admin Dashboard</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .logout-button {
+        background-color: #dc3545;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        position: absolute;
+        top: 20px;
+        left: 20px;
+      }
+
+      .logout-button:hover {
+        opacity: 0.9;
+      }
+
+      h1 {
+        color: #333;
+      }
+
+      .tabs {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+      }
+
+      .tab {
+        padding: 10px 20px;
+        cursor: pointer;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        margin-right: 10px;
+      }
+
+      .tab.active {
+        background-color: #0056b3;
+      }
+
+      .tab-content {
+        display: none;
+        width: 80%;
+        max-width: 800px;
+      }
+
+      .tab-content.active {
+        display: block;
+      }
+
+      .user-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .user-card h3 {
+        margin: 0 0 10px;
+      }
+
+      .user-card p {
+        margin: 5px 0;
+      }
+
+      .user-card button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        margin-right: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .user-card button.reject {
+        background-color: #dc3545;
+      }
+
+      .user-card button:hover {
+        opacity: 0.9;
+      }
+
+      .form-group {
+        margin-bottom: 15px;
+      }
+
+      .form-group label {
+        display: block;
+        margin-bottom: 5px;
+      }
+
+      .form-group input {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+      }
+
+      .form-group button {
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+
+      .form-group button:hover {
+        opacity: 0.9;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Admin Dashboard</h1>
+
+    <div class="tabs">
+      <button class="tab active" onclick="openTab('approval')">Approval</button>
+      <button class="tab" onclick="openTab('add-professors')">
+        Add Professors
+      </button>
+      <button class="tab" onclick="openTab('add-schedule')">
+        Add Class Schedule
+      </button>
+      <button class="tab" onclick="openTab('add-admins')">Add Admins</button>
+      <button class="tab" onclick="openTab('manage-users')">
+        Manage Users
+      </button>
+      <button class="tab" onclick="openTab('change-password')">
+        Change Password
+      </button>
+    </div>
+
+    <div id="approval" class="tab-content active">
+      <div id="user-list"></div>
+    </div>
+    <div id="add-professors" class="tab-content">
+      <h2>Add Professors</h2>
+      <div class="form-group">
+        <label for="prof-email">Email</label>
+        <input type="email" id="prof-email" />
+      </div>
+      <div class="form-group">
+        <label for="prof-fname">First Name</label>
+        <input type="text" id="prof-fname" />
+      </div>
+      <div class="form-group">
+        <label for="prof-lname">Last Name</label>
+        <input type="text" id="prof-lname" />
+      </div>
+      <div class="form-group">
+        <label for="prof-phone">Phone</label>
+        <input type="text" id="prof-phone" />
+      </div>
+      <div class="form-group">
+        <label for="prof-password">Password</label>
+        <input type="password" id="prof-password" />
+      </div>
+      <div class="form-group">
+        <button onclick="addProfessor()">Add</button>
+      </div>
+    </div>
+    <div id="add-schedule" class="tab-content">
+      <h2>Add Class Schedule</h2>
+      <div class="form-group">
+        <label for="course">Course</label>
+        <select id="course">
+          <option value="">Select a course</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="year-level">Year Level</label>
+        <select id="year-level">
+          <option value="">Select a year level</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="schedule-file">Upload Schedule</label>
+        <input type="file" id="schedule-file" />
+      </div>
+      <div class="form-group">
+        <button onclick="uploadSchedule()">Upload</button>
+      </div>
+      <div class="form-group" style="margin-top: 80px">
+        <h2>Delete Class Schedule</h2>
+        <label for="delete-course">Course</label>
+        <select id="delete-course">
+          <option value="">Select a course</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="delete-year-level">Year Level</label>
+        <select id="delete-year-level">
+          <option value="">Select a year level</option>
+          <option value="1">1</option>
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4">4</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <button onclick="deleteSchedule()">Delete Schedule</button>
+      </div>
+    </div>
+    <div id="add-admins" class="tab-content">
+      <h2>Add Admins</h2>
+      <div class="form-group">
+        <label for="admin-email">Email</label>
+        <input type="email" id="admin-email" />
+      </div>
+      <div class="form-group">
+        <label for="admin-fname">First Name</label>
+        <input type="text" id="admin-fname" />
+      </div>
+      <div class="form-group">
+        <label for="admin-lname">Last Name</label>
+        <input type="text" id="admin-lname" />
+      </div>
+      <div class="form-group">
+        <label for="admin-phone">Phone</label>
+        <input type="text" id="admin-phone" />
+      </div>
+      <div class="form-group">
+        <label for="admin-password">Password</label>
+        <input type="password" id="admin-password" />
+      </div>
+      <div class="form-group">
+        <button onclick="addAdmin()">Add</button>
+      </div>
+    </div>
+    <div id="manage-users" class="tab-content">
+      <h2>Manage Users</h2>
+      <div id="manage-user-list"></div>
+    </div>
+    <div id="change-password" class="tab-content">
+      <h2>Change Password</h2>
+      <div class="form-group">
+        <label for="current-password">Current Password</label>
+        <input type="password" id="current-password" />
+      </div>
+      <div class="form-group">
+        <label for="new-password">New Password</label>
+        <input type="password" id="new-password" />
+      </div>
+      <div class="form-group">
+        <label for="confirm-new-password">Confirm New Password</label>
+        <input type="password" id="confirm-new-password" />
+      </div>
+      <div class="form-group">
+        <button onclick="changePassword()">Change Password</button>
+      </div>
+    </div>
+    <button class="logout-button" onclick="logout()">Logout</button>
+
+    <script type="module">
+      // Import the necessary functions from Firebase SDK
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+      import {
+        getFirestore,
+        collection,
+        query,
+        where,
+        getDocs,
+        doc,
+        setDoc,
+        updateDoc,
+        deleteDoc,
+        getDoc,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+      import {
+        getAuth,
+        createUserWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut,
+        updateEmail,
+        EmailAuthProvider,
+        reauthenticateWithCredential,
+        updatePassword,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-analytics.js";
+      import {
+        getStorage,
+        ref,
+        uploadBytes,
+        getDownloadURL,
+        deleteObject,
+      } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-storage.js";
+
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyA4Y06IkNxzh3twL39jq_5CRGHTZ0WsYig",
+        authDomain: "amamobilemessaging.firebaseapp.com",
+        projectId: "amamobilemessaging",
+        storageBucket: "amamobilemessaging.firebasestorage.app",
+        messagingSenderId: "668625764440",
+        appId: "1:668625764440:web:f955b5f60a3228966b4a2d",
+        measurementId: "G-J8PZ8PT8VN",
+      };
+
+      // Initialize Firebase
+      const app = initializeApp(firebaseConfig);
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+      const storage = getStorage(app);
+      const analytics = getAnalytics(app);
+      const userList = document.getElementById("user-list");
+      const manageUserList = document.getElementById("manage-user-list");
+
+      // USER MUST BE ADMIN OR KICKED OUT
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          const userRef = doc(db, "users", user.uid);
+          const userDoc = await getDoc(userRef);
+          if (userDoc.exists() && userDoc.data().role === "admin") {
+            // User is authenticated and has the role "admin"
+            fetchUsers();
+            fetchManageUsers();
+          } else {
+            // User is not an admin
+            alert("Access denied. Admins only.");
+            window.location.href = "login.html";
+          }
+        } else {
+          // User is not authenticated
+          window.location.href = "login.html";
+        }
+      });
+
+      // APPROVAL | MUST BE 0.5
+      async function fetchUsers() {
+        try {
+          const q = query(
+            collection(db, "users"),
+            where("approved", "==", "0.5")
+          );
+          userList.innerHTML = ""; // Clear any existing users
+          const querySnapshot = await getDocs(q);
+          console.log("Fetched users:", querySnapshot.size); // Log the number of users fetched
+
+          if (querySnapshot.empty) {
+            const message = document.createElement("p");
+            message.textContent = "No users awaiting approval.";
+            userList.appendChild(message);
+          } else {
+            querySnapshot.forEach((doc) => {
+              const user = doc.data();
+              console.log("User data:", user); // Log each user's data
+              const userName = `${user.fName} ${user.lName}`;
+              const userCard = document.createElement("div");
+              userCard.className = "user-card";
+              userCard.innerHTML = `${
+                user.role === "student" ? `<h3>USN: ${user.USN}</h3>` : ""
+              }
+          ${
+            user.role === "professor" ? `<h3>Professor</h3>` : ""
+          }<h3>Name: ${userName}</h3><p>Email: ${user.email}</p><p>Phone: ${
+                user.phone
+              }</p>
+        <button onclick="approveUser('${doc.id}')">Approve</button>
+        <button class="reject" onclick="rejectUser('${
+          doc.id
+        }')">Reject</button>`;
+              userList.appendChild(userCard);
+            });
+          }
+        } catch (error) {
+          console.error("Error fetching users: ", error);
+        }
+      }
+
+      // ADD ADMIN
+      window.addAdmin = async function () {
+        const email = document.getElementById("admin-email").value;
+        const fName = document.getElementById("admin-fname").value;
+        const lName = document.getElementById("admin-lname").value;
+        const phone = document.getElementById("admin-phone").value;
+        const password = document.getElementById("admin-password").value;
+
+        try {
+          // Create user with email and password
+          const userCredential = await createUserWithEmailAndPassword(
+            auth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          // Add user details to Firestore with uid as document ID
+          await setDoc(doc(db, "users", user.uid), {
+            email,
+            fName,
+            lName,
+            phone,
+            role: "admin",
+            approved: "1",
+          });
+
+          alert("Admin added successfully");
+          // Clear the form
+          document.getElementById("admin-email").value = "";
+          document.getElementById("admin-fname").value = "";
+          document.getElementById("admin-lname").value = "";
+          document.getElementById("admin-phone").value = "";
+          document.getElementById("admin-password").value = "";
+        } catch (error) {
+          console.error("Error adding admin: ", error);
+          alert(error.message);
+        }
+      };
+
+      //MANAGE USERS
+      async function fetchManageUsers() {
+        try {
+          const q = query(
+            collection(db, "users"),
+            where("role", "in", ["student", "professor"])
+          );
+          manageUserList.innerHTML = ""; // Clear any existing users
+          const querySnapshot = await getDocs(q);
+          console.log("Fetched users for management:", querySnapshot.size); // Log the number of users fetched
+          querySnapshot.forEach((doc) => {
+            const user = doc.data();
+            console.log("User data for management:", user); // Log each user's data
+            const userName = `${user.fName} ${user.lName}`;
+            const userCard = document.createElement("div");
+            userCard.className = "user-card";
+            userCard.innerHTML = `
+        ${user.role === "student" ? `<h3>USN: ${user.USN}</h3>` : ""}
+        ${user.role === "professor" ? `<h3>Professor</h3>` : ""}
+        <h3>Name: ${userName}</h3>
+        <p>Email: ${user.email}</p>
+        <p>Phone: ${user.phone}</p>
+        <p>Role: ${user.role}</p>
+        <button onclick="editUser('${doc.id}')">Edit</button>
+        <button class="reject" onclick="deleteUser('${doc.id}')">Delete</button>
+      `;
+            manageUserList.appendChild(userCard);
+          });
+        } catch (error) {
+          console.error("Error fetching users for management: ", error);
+        }
+      }
+
+      // Approve user
+      window.approveUser = async function (userId) {
+        try {
+          const userRef = doc(db, "users", userId);
+          await updateDoc(userRef, {
+            approved: "1",
+          });
+          console.log(`User ${userId} approval status updated to 1`);
+        } catch (error) {
+          console.error("Error updating user approval: ", error);
+        }
+        fetchUsers();
+      };
+
+      // Reject user
+      window.rejectUser = async function (userId) {
+        try {
+          const userRef = doc(db, "users", userId);
+          await updateDoc(userRef, {
+            approved: "0",
+          });
+          console.log(`User ${userId} approval status updated to 0`);
+        } catch (error) {
+          console.error("Error updating user approval: ", error);
+        }
+        fetchUsers();
+      };
+      window.addProfessor = async function () {
+        const email = document.getElementById("prof-email").value;
+        const fName = document.getElementById("prof-fname").value;
+        const lName = document.getElementById("prof-lname").value;
+        const phone = document.getElementById("prof-phone").value;
+        const password = document.getElementById("prof-password").value;
+
+        try {
+          // Initialize a secondary Firebase app instance
+          const secondaryApp = initializeApp(firebaseConfig, "Secondary");
+
+          // Get the auth instance for the secondary app
+          const secondaryAuth = getAuth(secondaryApp);
+
+          // Create user with email and password using the secondary app
+          const userCredential = await createUserWithEmailAndPassword(
+            secondaryAuth,
+            email,
+            password
+          );
+          const user = userCredential.user;
+
+          // Add user details to Firestore with uid as document ID
+          await setDoc(doc(db, "users", user.uid), {
+            email,
+            fName,
+            lName,
+            phone,
+            role: "professor",
+            approved: "1",
+          });
+
+          alert("Professor added successfully");
+
+          // Delete the secondary app instance
+
+          // Clear the form
+          document.getElementById("prof-email").value = "";
+          document.getElementById("prof-fname").value = "";
+          document.getElementById("prof-lname").value = "";
+          document.getElementById("prof-phone").value = "";
+          document.getElementById("prof-password").value = "";
+        } catch (error) {
+          console.error("Error adding professor: ", error);
+          alert(error.message);
+        }
+      };
+
+      // Edit user
+      window.editUser = async function (userId) {
+        const userRef = doc(db, "users", userId);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const user = userDoc.data();
+          const userName = `${user.fName} ${user.lName}`;
+          const userCard = document.createElement("div");
+          userCard.className = "user-card";
+          userCard.innerHTML = `
+            <h3>Edit User: ${userName}</h3>
+            <div class="form-group">
+              <label for="edit-email">Email</label>
+              <input type="email" id="edit-email" value="${user.email}" />
+            </div>
+            <div class="form-group">
+              <label for="edit-fname">First Name</label>
+              <input type="text" id="edit-fname" value="${user.fName}" />
+            </div>
+            <div class="form-group">
+              <label for="edit-lname">Last Name</label>
+              <input type="text" id="edit-lname" value="${user.lName}" />
+            </div>
+            <div class="form-group">
+              <label for="edit-phone">Phone</label>
+              <input type="text" id="edit-phone" value="${user.phone}" />
+            </div>
+            <div class="form-group">
+              <button onclick="saveUser('${userId}')">Save</button>
+            </div>
+          `;
+          manageUserList.innerHTML = "";
+          manageUserList.appendChild(userCard);
+        } else {
+          console.error("User not found");
+        }
+      };
+
+      // Save user
+      window.saveUser = async function (userId) {
+        const email = document.getElementById("edit-email").value;
+        const fName = document.getElementById("edit-fname").value;
+        const lName = document.getElementById("edit-lname").value;
+        const phone = document.getElementById("edit-phone").value;
+
+        try {
+          const userRef = doc(db, "users", userId);
+          await updateDoc(userRef, {
+            email,
+            fName,
+            lName,
+            phone,
+          });
+
+          // Update email in Firebase Authentication
+          const user = auth.currentUser;
+          if (user) {
+            await updateEmail(user, email);
+            console.log(
+              `User ${userId} email updated successfully in Firebase Authentication`
+            );
+          }
+
+          console.log(`User ${userId} updated successfully`);
+          fetchManageUsers();
+        } catch (error) {
+          console.error("Error updating user:", error);
+        }
+      };
+
+      // Delete user
+      window.deleteUser = async function (userId) {
+        try {
+          const userRef = doc(db, "users", userId);
+          await deleteDoc(userRef);
+          console.log(`User ${userId} deleted successfully`);
+          fetchManageUsers();
+        } catch (error) {
+          console.error("Error deleting user:", error);
+        }
+      };
+
+      async function fetchCourses() {
+        const courseSelect = document.getElementById("course");
+        const deleteCourseSelect = document.getElementById("delete-course");
+
+        try {
+          const querySnapshot = await getDocs(collection(db, "courses"));
+          querySnapshot.forEach((doc) => {
+            const course = doc.data();
+            const option = document.createElement("option");
+            option.value = course.name;
+            option.textContent = course.name;
+            courseSelect.appendChild(option);
+
+            const deleteOption = option.cloneNode(true);
+            deleteCourseSelect.appendChild(deleteOption);
+          });
+        } catch (error) {
+          console.error("Error fetching courses: ", error);
+        }
+      }
+
+      // Call fetchCourses on page load
+      fetchCourses();
+      // Upload schedule
+      window.uploadSchedule = async function () {
+        const course = document
+          .getElementById("course")
+          .value.replace(/\s+/g, "_");
+        const yearLevel = document.getElementById("year-level").value;
+        const fileInput = document.getElementById("schedule-file");
+        const file = fileInput.files[0];
+
+        if (!file) {
+          alert("Please select a file to upload.");
+          return;
+        }
+
+        const storageRef = ref(storage, `schedules/${course}${yearLevel}`);
+        try {
+          await uploadBytes(storageRef, file);
+          const downloadURL = await getDownloadURL(storageRef);
+          console.log("File uploaded successfully:", downloadURL);
+          alert("File uploaded successfully.");
+          // Clear the form
+          document.getElementById("course").value = "";
+          document.getElementById("year-level").value = "";
+          fileInput.value = "";
+        } catch (error) {
+          console.error("Error uploading file:", error);
+          alert(error.message);
+        }
+      };
+
+      window.deleteSchedule = async function () {
+        const course = document
+          .getElementById("delete-course")
+          .value.replace(/\s+/g, "_");
+        const yearLevel = document.getElementById("delete-year-level").value;
+
+        if (!course || !yearLevel) {
+          alert("Please provide both course and year level.");
+          return;
+        }
+
+        const storageRef = ref(storage, `schedules/${course}${yearLevel}`);
+        try {
+          await deleteObject(storageRef);
+          console.log("File deleted successfully.");
+          alert("File deleted successfully.");
+          // Clear the form
+          document.getElementById("delete-course").value = "";
+          document.getElementById("delete-year-level").value = "";
+        } catch (error) {
+          console.error("Error deleting file:", error);
+          alert(error.message);
+        }
+      };
+      window.changePassword = async function () {
+        const currentPassword =
+          document.getElementById("current-password").value;
+        const newPassword = document.getElementById("new-password").value;
+        const confirmNewPassword = document.getElementById(
+          "confirm-new-password"
+        ).value;
+
+        if (newPassword !== confirmNewPassword) {
+          alert("New passwords do not match.");
+          return;
+        }
+
+        try {
+          const user = auth.currentUser;
+          const credential = EmailAuthProvider.credential(
+            user.email,
+            currentPassword
+          );
+
+          // Reauthenticate the user
+          await reauthenticateWithCredential(user, credential);
+
+          // Update the password
+          await updatePassword(user, newPassword);
+          alert("Password changed successfully.");
+
+          // Clear the form
+          document.getElementById("current-password").value = "";
+          document.getElementById("new-password").value = "";
+          document.getElementById("confirm-new-password").value = "";
+        } catch (error) {
+          console.error("Error changing password: ", error);
+          alert(error.message);
+        }
+      };
+
+      window.logout = async function () {
+        try {
+          await signOut(auth);
+          window.location.href = "login.html";
+        } catch (error) {
+          console.error("Error logging out:", error);
+          alert(error.message);
+        }
+      };
+
+      // Function to open tabs
+      window.openTab = function (tabName) {
+        const tabs = document.querySelectorAll(".tab");
+        const tabContents = document.querySelectorAll(".tab-content");
+
+        tabs.forEach((tab) => {
+          tab.classList.remove("active");
+        });
+
+        tabContents.forEach((content) => {
+          content.classList.remove("active");
+        });
+
+        document
+          .querySelector(`.tab[onclick="openTab('${tabName}')"]`)
+          .classList.add("active");
+        document.getElementById(tabName).classList.add("active");
+      };
+    </script>
+  </body>
+</html>
